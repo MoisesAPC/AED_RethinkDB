@@ -18,10 +18,10 @@ public class Main {
     public static void main(String[] args) {
         /**
          * Abrimos la conexión
-         * - Hostname por defecto: "hostname"
+         * - Hostname por defecto: "localhost"
          * - Puerto por defecto: 28015
          */
-        final String hostname = "hostname";
+        final String hostname = "localhost";
         final int puerto = 28015;
 
         Connection conn = r.connection().hostname(hostname).port(puerto).connect();
