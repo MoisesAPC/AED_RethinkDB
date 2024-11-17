@@ -17,7 +17,8 @@
         <dependency>
             <groupId>com.rethinkdb</groupId>
             <artifactId>rethinkdb-driver</artifactId>
-            <version>2.4.4</version>
+            <!-- @note Es necesaria la versión 2.3.3 para que funcione el Cursor -->
+            <version>2.3.3</version>
         </dependency>
     </dependencies>
 </project>
