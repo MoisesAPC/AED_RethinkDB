@@ -3,7 +3,6 @@ package com.example;
 import java.util.List;
 
 import com.rethinkdb.RethinkDB;
-import com.rethinkdb.model.MapObject;
 import com.rethinkdb.net.Connection;
 import com.rethinkdb.net.Cursor;
 
@@ -15,6 +14,28 @@ import com.rethinkdb.net.Cursor;
 public class Main {
     // Importamos el driver
     public static final RethinkDB r = RethinkDB.r;
+
+    private static void mostrarTodasLasTablas(Connection conn, String nombreTabla) {
+        System.out.println("- Contenido de la tabla " + nombreTabla + ": ");
+        Cursor cursor = r.table(nombreTabla).run(conn);
+        for (Object entrada : cursor) {
+            System.out.println();
+            System.out.println(entrada);
+            System.out.println();
+        }
+    }
+
+    private static void mostrarTablaPorNombre(Connection conn, String nombreTabla, String nombre) {
+        System.out.println("- Contenido de la tabla " + nombreTabla + " cuyo nombre es " + nombre + ":");
+        Cursor cursor = r.table(nombreTabla)
+            .filter(row -> row.g("name").eq(nombre))
+            .run(conn);
+        for (Object doc : cursor) {
+            System.out.println();
+            System.out.println(doc);
+            System.out.println();
+        }
+    }
 
     public static void main(String[] args) {
         /**
@@ -83,24 +104,10 @@ public class Main {
         System.out.println("- Número de entradas en la tabla authors: " + numAuthors);
 
         // Mostramos todas las entradas de la tabla authors
-        System.out.println("- Contenido de la tabla authors:");
-        Cursor cursor = r.table(nombreTabla).run(conn);
-        for (Object entrada : cursor) {
-            System.out.println();
-            System.out.println(entrada);
-            System.out.println();
-        }
+        mostrarTodasLasTablas(conn, "authors");
 
         // Mostramos aquella entrada cuyo campo "name" sea igual (eq) a "Laura Roslin"
-        System.out.println("- Contenido de la entrada cuyo name es Laura Roslin:");
-        cursor = r.table("authors")
-            .filter(row -> row.g("name").eq("Laura Roslin"))
-            .run(conn);
-        for (Object doc : cursor) {
-            System.out.println();
-            System.out.println(doc);
-            System.out.println();
-        }
+        mostrarTablaPorNombre(conn, nombreTabla, "Laura Roslin");
 
         // Actualizamos la entrada Laura Roslin para cambiarle el nombre a Pepe Martín
         r.table(nombreTabla)
@@ -109,15 +116,7 @@ public class Main {
             .run(conn);
 
         // Mostramos dicha entrada otra vez
-        System.out.println("- Contenido de la entrada cuyo name es Pepe Martín:");
-        cursor = r.table("authors")
-            .filter(row -> row.g("name").eq("Pepe Martín"))
-            .run(conn);
-        for (Object doc : cursor) {
-            System.out.println();
-            System.out.println(doc);
-            System.out.println();
-        }
+        mostrarTablaPorNombre(conn, nombreTabla, "Pepe Martín");
 
         // Ahora, borraremos la entrada cuyo nombre es Pepe Martín
         System.out.println("- Borramos la entrada Pepe Martín:");
@@ -127,13 +126,7 @@ public class Main {
             .run(conn);
 
         // Mostramos todas las entradas de nuevo para ver que se ha borrado correctamente a Pepe Martín
-        System.out.println("- Contenido de la tabla authors:");
-        cursor = r.table(nombreTabla).run(conn);
-        for (Object entrada : cursor) {
-            System.out.println();
-            System.out.println(entrada);
-            System.out.println();
-        }
+        mostrarTodasLasTablas(conn, "authors");
 
         // Cerramos la conexión
         conn.close();
